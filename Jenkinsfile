@@ -35,6 +35,18 @@ pipeline {
             }
         }
 
+        stage('Add Env') {
+            steps {
+                script {
+                    sh 'ls -R admin'
+                    sh 'chmod -R 777 src/main/resources/'
+                    withCredentials([file(credentialsId: 'application-prod', variable: 'application')]) {
+                        sh 'cp $application src/main/resources/application-prod.properties'
+                    }
+                }
+            }
+        }
+
         stage('Prepare Jar') {
             steps {
                 // 빌드 결과물인 JAR 파일을 지정한 이름(app.jar) 이름으로 복사
