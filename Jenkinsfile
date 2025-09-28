@@ -1,10 +1,12 @@
 pipeline {
     agent any // 어떤 에이전트(실행 서버) 에서든 실행 가능
 
+    // tools //
     tools {
         maven 'maven 3.9.11' // Jenkins에 등록된 Maven 3.9.11을 사용
     }
 
+    // environment //
     environment {
         // 배포에 필요한 변수 설정
         DOCKER_IMAGE = "demo-app"  // 도커 이미지 이름
@@ -19,6 +21,7 @@ pipeline {
         SSH_CREDENTIALS_ID = "3a87bd1b-98c6-439f-b7f9-d16271d615f7"  // Jenkins SSH 자격 증명 ID
     }
 
+    // stages //
     stages {
         stage('Git Checkout') {
             steps { // step : stage 안에서 실행할 실제 명령어
@@ -93,6 +96,7 @@ ENDSSH
         }
     }
 
+    // post //
     post {
         always {
             withCredentials([
@@ -105,4 +109,6 @@ ENDSSH
               }
         }
     }
+
+
 }
