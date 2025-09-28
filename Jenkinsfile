@@ -21,29 +21,29 @@ pipeline {
 
     stages {
         stage('Git Checkout') {
-            //steps { // step : stage 안에서 실행할 실제 명령어
+            steps { // step : stage 안에서 실행할 실제 명령어
                 // Jenkins가 연결된 Git 저장소 에서 최신 코드 체크아웃
                 checkout scm
-            //}
+            }
         }
 
         stage('Maven Build') {
-            //steps {
+            steps {
                 // 테스트는 건너뛰고 Maven 빌드
                 sh 'mvn clean package -DskipTests'
                 // sh 'echo Hello' : 리눅스 명령어 실행
-            //}
+            }
         }
 
         stage('Prepare Jar') {
-            //steps {
+            steps {
                 // 빌드 결과물인 JAR 파일을 지정한 이름(app.jar) 이름으로 복사
                 sh 'cp target/demo-0.0.1-SNAPSHOT.jar ${JAR_FILE_NAME}'
-            //}
+            }
         }
 
         stage('Copy to Remote Server') {
-            //steps {
+            steps {
                 // Jenkins가 원격 서버에 SSH 접속할 수 있도록 sshagent 사용
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                     // 원격 서버에 배포 디렉토리 생성 (없으면 새로 만듦)
@@ -52,11 +52,11 @@ pipeline {
                     // JAR 파일과 Dockerfile을 원격 서버에 복사
                     sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${JAR_FILE_NAME} Dockerfile ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/"
                 }
-           //}
+           }
         }
 
         stage('Remote Docker Build & Deploy') {
-            //steps {
+            steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                        // 원격 서버에서 도커 컨테이너를 제거하고 새로 빌드 및 실행
                     sh """
@@ -68,7 +68,7 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@$
 ENDSSH
 """
                 }
- //           }
+            }
         }
     }
 }
