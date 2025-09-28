@@ -31,7 +31,8 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'application-prod', variable: 'secretFile')]) {
                 sh '''
- cp $secretFile ./src/main/resources/application-prod.properties
+                mkdir -p ./src/main/resources/
+                cp $secretFile ./src/main/resources/application-prod.properties
  '''
                 }
             }
