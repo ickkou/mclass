@@ -100,7 +100,7 @@ ENDSSH
                     string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
                 ]) {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
-                    sh "docker image prune -f"
+                    sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_HOST} \"docker image prune -f\""
                 }
               }
         }
