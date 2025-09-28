@@ -12,5 +12,5 @@ COPY app.jar app.jar
 EXPOSE 8081
 
 # 컨테이너가 시작될 때 자동으로 java -jar app.jar 명령을 실행하도록 설정
- ENTRYPOINT [ "java" , "-jar" , "app.jar" ]
+ENTRYPOINT [ "java" , "-jar" , "app.jar" ]
 
