@@ -92,4 +92,17 @@ ENDSSH
             }
         }
     }
+
+    post {
+        always {
+            withCredentials([
+                    string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
+                    string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
+                ]) {
+                sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
+                    sh "docker image prune -f"
+                }
+              }
+        }
+    }
 }
