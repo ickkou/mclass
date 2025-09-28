@@ -85,7 +85,7 @@ ENDSSH
             steps {
                 withCredentials([file(credentialsId: 'application-prod', variable: 'secretFile')]) {
                     sh '''
- cp $secretFile ./src/main/resources/application-prod.properties
+ cp $secretFile /home/ec2-user/deploy/application-prod.properties
  '''
             }
         }
