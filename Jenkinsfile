@@ -38,10 +38,9 @@ pipeline {
         stage('Add Env') {
             steps {
                 script {
-                    sh 'ls -R admin'
-                    sh 'chmod -R 777 src/main/resources/'
+                    sh 'chmod -R 777 ./src/main/resources'
                     withCredentials([file(credentialsId: 'application-prod', variable: 'application')]) {
-                        sh 'cp $application src/main/resources/application-prod.properties'
+                        sh 'cp $application ./src/main/resources/application-prod.properties'
                     }
                 }
             }
