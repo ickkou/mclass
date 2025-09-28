@@ -30,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('2. Secret File : application-prod') {
+        stage('2. Secret File Add') {
             steps {
                 script {
                     sh 'chmod -R 777 ./src/main/resources'
