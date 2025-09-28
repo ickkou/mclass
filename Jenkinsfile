@@ -27,15 +27,7 @@ pipeline {
             }
         }
 
-        stage('Maven Build') {
-            steps {
-                // 테스트는 건너뛰고 Maven 빌드
-                sh 'mvn clean package -DskipTests'
-                // sh 'echo Hello' : 리눅스 명령어 실행
-            }
-        }
-
-        stage('Add Env') {
+        stage('Secret File : application-prod') {
             steps {
                 script {
                     sh 'chmod -R 777 ./src/main/resources'
@@ -43,6 +35,14 @@ pipeline {
                         sh 'cp $application ./src/main/resources/application-prod.properties'
                     }
                 }
+            }
+        }
+
+        stage('Maven Build') {
+            steps {
+                // 테스트는 건너뛰고 Maven 빌드
+                sh 'mvn clean package -DskipTests'
+                // sh 'echo Hello' : 리눅스 명령어 실행
             }
         }
 
