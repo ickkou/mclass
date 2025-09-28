@@ -27,17 +27,6 @@ pipeline {
             }
         }
 
-        stage('Replace application.properties') {
-            steps {
-                withCredentials([file(credentialsId: 'application-prod', variable: 'secretFile')]) {
-                sh '''
-                mkdir -p ./src/main/resources/
-                cp $secretFile ./src/main/resources/application-prod.properties
- '''
-                }
-            }
-        }
-
         stage('Maven Build') {
             steps {
                 // 테스트는 건너뛰고 Maven 빌드
