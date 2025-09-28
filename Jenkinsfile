@@ -38,7 +38,7 @@ pipeline {
         stage('Prepare Jar') {
             steps {
                 // 빌드 결과물인 JAR 파일을 지정한 이름(app.jar) 이름으로 복사
-                sh 'cp target/demo-0.0.1-SNATSHOP.jar ${JAR_FILE_NAME}'
+                sh 'cp target/demo-0.0.1-SNAPSHOP.jar ${JAR_FILE_NAME}'
             }
         }
 
