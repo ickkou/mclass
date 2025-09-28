@@ -14,9 +14,6 @@ pipeline {
 
         //REMOTE_USER = "ec2-user"  // 원격(spring) 서버 사용자
         //REMOTE_HOST = "3.34.97.18"  // 원격(spring) 서버 IP(Public IP)
-        REMOTE_USER = credentials('remote-user-id')
-        REMOTE_HOST = credentials('remote-host-id') 
-
 
         REMOTE_DIR = "/home/ec2-user/deploy"  // 원격 서버에 파일 복사할 경로
         SSH_CREDENTIALS_ID = "3a87bd1b-98c6-439f-b7f9-d16271d615f7"  // Jenkins SSH 자격 증명 ID
@@ -47,6 +44,10 @@ pipeline {
 
         stage('Copy to Remote Server') {
             steps {
+                withCredentials([
+                    string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
+                    string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
+                ]) {
                 // Jenkins가 원격 서버에 SSH 접속할 수 있도록 sshagent 사용
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                     // 원격 서버에 배포 디렉토리 생성 (없으면 새로 만듦)
@@ -55,11 +56,16 @@ pipeline {
                     // JAR 파일과 Dockerfile을 원격 서버에 복사
                     sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${JAR_FILE_NAME} Dockerfile ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/"
                 }
+              }
            }
         }
 
         stage('Remote Docker Build & Deploy') {
             steps {
+                withCredentials([
+                    string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
+                    string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
+                ]) {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                        // 원격 서버에서 도커 컨테이너를 제거하고 새로 빌드 및 실행
                     sh """
@@ -71,6 +77,7 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@$
 ENDSSH
 """
                 }
+              }
             }
         }
     }
