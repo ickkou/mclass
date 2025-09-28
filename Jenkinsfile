@@ -23,14 +23,14 @@ pipeline {
 
     // stages //
     stages {
-        stage('Git Checkout') {
+        stage('1. Git Checkout') {
             steps { // step : stage 안에서 실행할 실제 명령어
                 // Jenkins가 연결된 Git 저장소 에서 최신 코드 체크아웃
                 checkout scm
             }
         }
 
-        stage('Secret File : application-prod') {
+        stage('2. Secret File : application-prod') {
             steps {
                 script {
                     sh 'chmod -R 777 ./src/main/resources'
@@ -41,22 +41,24 @@ pipeline {
             }
         }
 
-        stage('Maven Build') {
+        stage('3. Maven Build') {
             steps {
                 // 테스트는 건너뛰고 Maven 빌드
                 sh 'mvn clean package -DskipTests'
+                
                 // sh 'echo Hello' : 리눅스 명령어 실행
+                sh 'echo Hello'
             }
         }
 
-        stage('Prepare Jar') {
+        stage('4. Prepare Jar') {
             steps {
-                // 빌드 결과물인 JAR 파일을 지정한 이름(app.jar) 이름으로 복사
+                // 빌드 결과물인 JAR 파일을 지정한 이름(app.jar) 이름 으로 복사
                 sh 'cp target/demo-0.0.1-SNAPSHOT.jar ${JAR_FILE_NAME}'
             }
         }
 
-        stage('Copy to Remote Server') {
+        stage('5. Copy to Remote Server') {
             steps {
                 withCredentials([
                     string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
@@ -74,7 +76,7 @@ pipeline {
            }
         }
 
-        stage('Remote Docker Build & Deploy') {
+        stage('6. Remote Docker Build & Deploy') {
             steps {
                 withCredentials([
                     string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
@@ -104,6 +106,7 @@ ENDSSH
                     string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
                 ]) {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
+                    // 기존 생성된 도커 이미지 삭제 : docker image prune -f
                     sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_HOST} \"docker image prune -f\""
                 }
               }
