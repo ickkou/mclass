@@ -27,6 +27,16 @@ pipeline {
             }
         }
 
+        stage('Replace application.properties') {
+            steps {
+                withCredentials([file(credentialsId: 'application-prod', variable: 'secretFile')]) {
+                sh '''
+ cp $secretFile ./src/main/resources/application-prod.properties
+ '''
+                }
+            }
+        }
+
         stage('Maven Build') {
             steps {
                 // 테스트는 건너뛰고 Maven 빌드
@@ -64,8 +74,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(credentialsId: 'remote-user-id', variable: 'REMOTE_USER'),
-                    string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST'),
-                    file(credentialsId: 'application-prod', variable: 'secretFile')
+                    string(credentialsId: 'remote-host-id', variable: 'REMOTE_HOST')
                 ]) {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                        // 원격 서버에서 도커 컨테이너를 제거하고 새로 빌드 및 실행
@@ -77,7 +86,6 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@$
                 docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${DOCKER_IMAGE} # 새 컨테이너 실행           
 ENDSSH
 """
-                  sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_HOST} \"mkdir -p ${REMOTE_DIR} && cp \$secretFile ${REMOTE_DIR}/application-prod.properties\""  
                 }
               }
             }
