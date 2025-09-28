@@ -35,7 +35,7 @@ pipeline {
                 script {
                     sh 'chmod -R 777 ./src/main/resources'
                     withCredentials([file(credentialsId: 'application-prod', variable: 'application')]) {
-                        sh 'cp $application ./src/main/resources/application-prod.properties'
+                        sh 'cp $application ./src/main/resources/'
                     }
                 }
             }
