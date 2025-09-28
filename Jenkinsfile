@@ -73,22 +73,13 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@$
                 cd ${REMOTE_DIR} || exit 1                          # 복사한 디렉토리로 이동
                 docker rm -f ${CONTAINER_NAME} || true             # 이전에 실행 중인 컨테이너 삭제 (없으면 무시)
                 docker build -t ${DOCKER_IMAGE} .                  # 현재 디렉토리에서 Docker 이미지 빌드
-                docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${DOCKER_IMAGE} # 새 컨테이너 실행
+                docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${DOCKER_IMAGE} # 새 컨테이너 실행           
 ENDSSH
 """
+                  sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${REMOTE_USER}@${REMOTE_HOST} \"mkdir -p ${REMOTE_DIR} && cp \$secretFile ${REMOTE_DIR}/application-prod.properties\""  
                 }
               }
             }
         }
-
-        stage('test - secretfile') {
-            steps {
-                withCredentials([file(credentialsId: 'application-prod', variable: 'secretFile')]) {
-                    sh '''
- cp $secretFile /home/ec2-user/deploy/application-prod.properties
- '''
-            }
-        }
-      }
     }
 }
